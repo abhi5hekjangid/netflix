@@ -2,7 +2,7 @@
 const apiKey = '38fbd1866d739e92780eae3792f81f3e'
 const apiEndPoint = 'https://api.themoviedb.org/3'
 const imgPath = 'https://image.tmdb.org/t/p/original'
-const youtubeApiKey = 'AIzaSyDhlTdOy-ZCQ6sEyHGq66d2Idwf5VQ3UGw'
+const youtubeApiKey = 'AIzaSyACR7ch7qB2uH9ZIpxQNI285wFAVU7GsWY'
 const youtubeURL = 'https://www.youtube.com/watch?v='
 const apiPaths = {
     fetchAllCategories: `${apiEndPoint}/genre/movie/list?api_key=${apiKey}`,
