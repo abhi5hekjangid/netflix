@@ -85,7 +85,7 @@ function buildMoviesSection(list,categoryName){
         // .then(res=>res.json())
         // .then(res=>console.log(res));
         return ` 
-        <div class="movie-item" onmouseenter="searchMovieTrailer('${item.title}','yt${item.id}')">
+        <div class="movie-item" onmouseover="searchMovieTrailer('${item.title}','yt${item.id}')">
             <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${item.title}" >
             <iframe width="245px" height="150px" src="" id="yt${item.id}"></iframe>
         </div> 
@@ -129,7 +129,7 @@ function searchMovieTrailer(movieName, iframeId){
         // const ytUrl = `${youtubeURL}${bestResult.id.videoId}`;
         // console.log(ytUrl);
         // window.open(ytUrl,'_blank');
-        document.getElementById(iframeId).src= `https://www.youtube.com/embed/${bestResult.id.videoId}?autoplay=1&controls=0`;
+        document.getElementById(iframeId).src= `https://www.youtube.com/embed/${bestResult.id.videoId}?autoplay=0&controls=0`;
     })
     .catch(err=>console.log(err));
 
