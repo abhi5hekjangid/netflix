@@ -1,13 +1,18 @@
+
 //const
 const apiKey = '38fbd1866d739e92780eae3792f81f3e'
 const apiEndPoint = 'https://api.themoviedb.org/3'
 const imgPath = 'https://image.tmdb.org/t/p/original'
 const youtubeApiKey = 'AIzaSyACR7ch7qB2uH9ZIpxQNI285wFAVU7GsWY'
 const youtubeURL = 'https://www.youtube.com/watch?v='
+
+// https://api.themoviedb.org/3/tv/popular
+// only difference between index.html and tvshow.html is that we are using 'tv' api path here
 const apiPaths = {
-    fetchAllCategories: `${apiEndPoint}/genre/movie/list?api_key=${apiKey}`,
-    fetchMoviesList: (id) => `${apiEndPoint}/discover/movie?api_key=${apiKey}&with_genres=${id}`,
-    fetchTrending: `${apiEndPoint}/trending/movie/day?api_key=${apiKey}`,
+    fetchMoviesNew: `${apiEndPoint}/movie/now_playing?api_key=${apiKey}`,
+    fetchMoviesPopular: `${apiEndPoint}/movie/popular?api_key=${apiKey}`,
+    fetchTvTopRated: `${apiEndPoint}/tv/top_rated?api_key=${apiKey}`,
+    fetchTvPopular: `${apiEndPoint}/tv/popular?api_key=${apiKey}`,
     searchOnYoutube: (query) => `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${youtubeApiKey}`,
 }
 
@@ -15,14 +20,19 @@ const apiPaths = {
 function init(){
     // console.log(apiPaths.fetchTrending);
     fetchTrendingMovie();
-    fetchAndBuildAllSections();
+    fetchAndBuildAllSections(apiPaths.fetchMoviesNew,'New Movies');
+    fetchAndBuildAllSections(apiPaths.fetchMoviesPopular,'Popular Movies');
+    fetchAndBuildAllSections(apiPaths.fetchTvPopular,'New Tv Shows');
+    fetchAndBuildAllSections(apiPaths.fetchTvTopRated,'Top Rated Tv shows');
 }
 
 function fetchTrendingMovie(){
-    fetchAndBuildMovieSection(apiPaths.fetchTrending,'Trending Now')
-    .then(movies =>{
-        const randomIdx = parseInt(Math.random() * movies.length)
-        buildBannerSection(movies[randomIdx]);
+    fetch(apiPaths.fetchMoviesPopular)
+    .then(res=>res.json())
+    .then(res =>{
+        // console.log(res);
+        const randomIdx = parseInt(Math.random() * res.results.length)
+        buildBannerSection(res.results[randomIdx]);
     })
     .catch(err=>console.error(err));
 }
@@ -45,34 +55,13 @@ function buildBannerSection(movie){
     div.className="banner-content container";
     bannerContainer.append(div);
 }
-function fetchAndBuildAllSections(){
-    fetch(apiPaths.fetchAllCategories)
+
+function fetchAndBuildAllSections(url,categoryName){
+    fetch(url)
     .then(res=>res.json())
     .then(res=>{
-        const categories = res.genres;
-
-        if(Array.isArray(categories) && categories.length){
-            categories.forEach(category =>{
-                fetchAndBuildMovieSection(
-                apiPaths.fetchMoviesList(category.id),
-                category.name);
-            });            
-        }
-        // console.table(categories);
-    })
-    .catch(err=>console.log(err));
-}
-
-function fetchAndBuildMovieSection(fetchUrl, categoryName){
-    // console.table(fetchUrl,categoryName);
-    return fetch(fetchUrl)
-    .then(res=>res.json())
-    .then(res=>{
-        const movies = res.results;
-        if(Array.isArray(movies) && movies.length){
-            buildMoviesSection(movies,categoryName);
-        }
-        return movies;
+        console.log(res.results);
+        buildMoviesSection(res.results,categoryName);
     })
     .catch(err=>console.log(err));
 }
@@ -93,6 +82,7 @@ function buildMoviesSection(list,categoryName){
     }).join('');
     // used join to remove ',' from between two img tags
 
+    // console.log(moviesListHTML);
     const moviesSectionHTML = `\
             <h2 class="movies-section-heading">${categoryName}<span class="explore-nudge">Explore All</span> </h2>
             <div class="movies-row">
@@ -105,7 +95,7 @@ function buildMoviesSection(list,categoryName){
     div.innerHTML=moviesSectionHTML
 
     // append HTML into container
-
+    // console.log(moviesSectionHTML);
     moviesCont.append(div);
 
     // console.log(moviesSectionHTML)
@@ -118,6 +108,7 @@ function buildMoviesSection(list,categoryName){
             </div>
         </div>*/ 
 }
+
 
 function searchMovieTrailer(movieName, iframeId){
     if (!movieName) return;
@@ -134,6 +125,7 @@ function searchMovieTrailer(movieName, iframeId){
     .catch(err=>console.log(err));
 
 }
+
 window.addEventListener('load',function(){
     init();
     window.addEventListener('scroll',function(){

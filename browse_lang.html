@@ -7,7 +7,7 @@
     <title>Netflix Clone</title>
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="index.js" defer></script>
+    <script src="browse_lang.js" defer></script>
     <script src="active.js" defer></script>
 </head>
 <body>
@@ -34,22 +34,20 @@
     </header>
     <!-- header end -->
 
-
-    <!-- Banner Section Start -->
-    <div class="banner-section" id="banner-section">
-        <!-- <div class="banner-content container">
-            <h2 class="banner__title">Delhi Crime</h2>
-            <p class="banner__info">#4 in tv shows today</p>
-            <p class="banner__overview">Banner overiew following is the</p>
-            <div class="action-button-cont">
-                <button class="action-button"><i class="fa-solid fa-play"></i> &nbsp Play</button>
-                <button class="action-button"><i class="fa-solid fa-circle-info"></i> &nbsp More Info</button>
-            </div>
+    <!-- Browse section starts here-->
+    <div id="browse-cont" class="browse-cont container">
+        <!-- <div class="browse-section">
+            <label for="lang">Browse by language:</label>
+            <select class="lang-select"  id="lang" name="Audio">
+              <option class = "lang-item" value="">--Please choose a audio--</option>
+              <option class = "lang-item" value="volvo">Volvo</option>
+              <option class = "lang-item" value="saab">Saab</option>
+              <option class = "lang-item" value="audi">Audi</option>
+            </select>
         </div> -->
-        <div class="banner-fade-bottom"></div>
     </div>
-    <!-- Banner Section End -->
-    
+    <!-- Browse section ends here-->
+
     <!-- movies section start -->
     <div class="movies-cont container" id="movies-cont">
         <!-- <div class="movies-section">
@@ -62,5 +60,7 @@
         </div> -->
     </div>
     <!-- movies section end -->
+
+    
 </body>
 </html>

@@ -4,10 +4,12 @@ const apiEndPoint = 'https://api.themoviedb.org/3'
 const imgPath = 'https://image.tmdb.org/t/p/original'
 const youtubeApiKey = 'AIzaSyACR7ch7qB2uH9ZIpxQNI285wFAVU7GsWY'
 const youtubeURL = 'https://www.youtube.com/watch?v='
+
+// only difference between index.html and tvshow.html is that we are using 'tv' api path here
 const apiPaths = {
-    fetchAllCategories: `${apiEndPoint}/genre/movie/list?api_key=${apiKey}`,
-    fetchMoviesList: (id) => `${apiEndPoint}/discover/movie?api_key=${apiKey}&with_genres=${id}`,
-    fetchTrending: `${apiEndPoint}/trending/movie/day?api_key=${apiKey}`,
+    fetchAllCategories: `${apiEndPoint}/genre/tv/list?api_key=${apiKey}`,
+    fetchMoviesList: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_genres=${id}`,
+    fetchTrending: `${apiEndPoint}/trending/tv/day?api_key=${apiKey}`,
     searchOnYoutube: (query) => `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${youtubeApiKey}`,
 }
 
@@ -28,14 +30,14 @@ function fetchTrendingMovie(){
 }
 
 function buildBannerSection(movie){
-    // console.log(movie);
+    console.log(movie);
     const bannerContainer = document.getElementById('banner-section');
     bannerContainer.style.backgroundImage = `url(${imgPath}${movie.poster_path})`;
 
     const div = document.createElement('div');
     div.innerHTML= `
-        <h2 class="banner__title">${movie.title}</h2>
-        <p class="banner__info">Released on ${movie.release_date}</p>
+        <h2 class="banner__title">${movie.name}</h2>
+        <p class="banner__info">First Air Date ${movie.first_air_date}</p>
         <p class="banner__overview">${movie.overview.length > 200 ? movie.overview.slice(0,200).trim()+'...':movie.overview}</p>
         <div class="action-button-cont">
             <button class="action-button"><i class="fa-solid fa-play"></i> &nbsp Play</button>
@@ -85,8 +87,8 @@ function buildMoviesSection(list,categoryName){
         // .then(res=>res.json())
         // .then(res=>console.log(res));
         return ` 
-        <div class="movie-item" onmouseover="searchMovieTrailer('${item.title}','yt${item.id}')">
-            <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${item.title}" >
+        <div class="movie-item" onmouseover="searchMovieTrailer('${item.name}','yt${item.id}')">
+            <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${item.name}" >
             <iframe width="245px" height="150px" src="" id="yt${item.id}"></iframe>
         </div> 
         `;       
@@ -142,4 +144,3 @@ window.addEventListener('load',function(){
         else header.classList.remove('bg_black');
     });
 });
-
