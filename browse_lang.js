@@ -38,6 +38,11 @@ function createBrowseSection(languages){
     const browseCont = document.getElementById('browse-cont');
     const langListHTML = languages.map(item=>{
         // console.log(item);
+        if(item.iso_639_1=="en"){
+            return ` 
+            <option class = "lang-item" value='${item.iso_639_1} ${item.english_name}' selected>${item.english_name}</option> 
+            `;      
+        }
         return ` 
         <option class = "lang-item" value='${item.iso_639_1} ${item.english_name}'>${item.english_name}</option> 
         `;       

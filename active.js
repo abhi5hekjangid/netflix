@@ -13,3 +13,10 @@ for(let i=0; i<navLinks.length;i++){
         navLinks[i].classList.add('active');
     }
 }
+
+// add footer
+fetch('footer.html')
+.then(res => res.text())
+.then(res => {
+  document.getElementById('footer').innerHTML = res;
+});
