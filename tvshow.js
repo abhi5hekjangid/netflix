@@ -4,13 +4,22 @@ const apiEndPoint = 'https://api.themoviedb.org/3'
 const imgPath = 'https://image.tmdb.org/t/p/original'
 const youtubeApiKey = 'AIzaSyACR7ch7qB2uH9ZIpxQNI285wFAVU7GsWY'
 const youtubeURL = 'https://www.youtube.com/watch?v='
-
-// only difference between index.html and tvshow.html is that we are using 'tv' api path here
 const apiPaths = {
-    fetchAllCategories: `${apiEndPoint}/genre/tv/list?api_key=${apiKey}`,
-    fetchMoviesList: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_genres=${id}`,
-    fetchTrending: `${apiEndPoint}/trending/tv/day?api_key=${apiKey}`,
+    fetchAllCategories: `${apiEndPoint}/genre/movie/list?api_key=${apiKey}`,
+    fetchMoviesList: (id) => `${apiEndPoint}/discover/movie?api_key=${apiKey}&with_genres=${id}`,
+    fetchTrending: `${apiEndPoint}/trending/movie/day?api_key=${apiKey}`,
     searchOnYoutube: (query) => `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${youtubeApiKey}`,
+    fetchSearchedResults: (id) => `${apiEndPoint}/search/movie?api_key=${apiKey}&query=${id}`,
+    fetchAllCategoriesTv: `${apiEndPoint}/genre/tv/list?api_key=${apiKey}`,
+    fetchTvList: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_genres=${id}`,
+    fetchTrendingTv: `${apiEndPoint}/trending/tv/day?api_key=${apiKey}`,
+    fetchMoviesNew: `${apiEndPoint}/movie/now_playing?api_key=${apiKey}`,
+    fetchMoviesPopular: `${apiEndPoint}/movie/top_rated?api_key=${apiKey}`,
+    fetchTvTopRated: `${apiEndPoint}/tv/top_rated?api_key=${apiKey}`,
+    fetchTvPopular: `${apiEndPoint}/tv/popular?api_key=${apiKey}`,
+    fetchAllLanguages: `https://api.themoviedb.org/3/configuration/languages?api_key=${apiKey}`,
+    fetchMoviesListByLang: (id) => `${apiEndPoint}/discover/movie?api_key=${apiKey}&with_original_language=${id}`,
+    fetchTvListByLang: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_original_language=${id}`,
 }
 
 //boots up the app
@@ -21,7 +30,7 @@ function init(){
 }
 
 function fetchTrendingMovie(){
-    fetchAndBuildMovieSection(apiPaths.fetchTrending,'Trending Now')
+    fetchAndBuildMovieSection(apiPaths.fetchTrendingTv,'Trending Now')
     .then(movies =>{
         const randomIdx = parseInt(Math.random() * movies.length)
         buildBannerSection(movies[randomIdx]);
@@ -48,7 +57,7 @@ function buildBannerSection(movie){
     bannerContainer.append(div);
 }
 function fetchAndBuildAllSections(){
-    fetch(apiPaths.fetchAllCategories)
+    fetch(apiPaths.fetchAllCategoriesTv)
     .then(res=>res.json())
     .then(res=>{
         const categories = res.genres;
@@ -56,7 +65,7 @@ function fetchAndBuildAllSections(){
         if(Array.isArray(categories) && categories.length){
             categories.forEach(category =>{
                 fetchAndBuildMovieSection(
-                apiPaths.fetchMoviesList(category.id),
+                    apiPaths.fetchTvList(category.id),
                 category.name);
             });            
         }

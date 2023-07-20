@@ -59,6 +59,7 @@ header.bg_black{
 }
 .right-cont i{
     color: white;
+    padding: 5px;
     margin-right: 22px;
     cursor: pointer;
 }
@@ -68,6 +69,70 @@ header.bg_black{
     cursor: pointer;
 }
 
+
+/* search css */
+
+.searched-section{
+    margin-top: 100px;
+}
+
+.searched-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.search-box{
+    width: 400px;
+    background-color: black;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    height: 35px;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 15px;
+}
+
+
+.search-icon{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px;
+}
+.search-icon i{
+    border: 0;
+    outline: 0;
+    color: #e5e5e5;
+    padding: 0%;
+    margin: 8px;
+    justify-content: end;
+}
+.search-box input{
+    flex: 1;
+    height: 15px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: #e5e5e5;
+    margin-left: 5px;
+}
+
+.search-bar::placeholder{
+    color: #e5e5e5;
+}
+
+.show{
+    display: inline-flex;
+}
+
+.hide{
+    display: none;
+}
 /* Movies Section */
 
 .movies-section{
@@ -98,8 +163,7 @@ header.bg_black{
     flex-direction: row;
     align-items: center;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow-x:auto;
 }
 
 .movie-item{
@@ -301,6 +365,8 @@ header.bg_black{
     text-decoration: underline;
     margin-left: 38px;
 }
+
+
 /* Responsive CSS */
 @media (max-width:757px){
     .main-nav{

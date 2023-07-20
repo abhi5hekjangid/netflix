@@ -21,118 +21,89 @@ const apiPaths = {
     fetchTvListByLang: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_original_language=${id}`,
 }
 
-
 //boots up the app
 function init(){
     // console.log(apiPaths.fetchTrending);
-    fetchAllLanguages();
-
-    //default
-    fetchAndBuildAllSectionsMovies("en English","movie");
-    fetchAndBuildAllSectionsMovies("en English","tv");
+    fetchTrendingMovie();
+    fetchAndBuildAllSections();
 }
 
+function fetchTrendingMovie(){
+    fetchAndBuildMovieSection(apiPaths.fetchTrending,'Trending Now')
+    .then(movies =>{
+        const randomIdx = parseInt(Math.random() * movies.length)
+        buildBannerSection(movies[randomIdx]);
+    })
+    .catch(err=>console.error(err));
+}
 
-function fetchAllLanguages(){
-    fetch(apiPaths.fetchAllLanguages)
+function buildBannerSection(movie){
+    // console.log(movie);
+    const bannerContainer = document.getElementById('banner-section');
+    bannerContainer.style.backgroundImage = `url(${imgPath}${movie.poster_path})`;
+
+    const div = document.createElement('div');
+    div.innerHTML= `
+        <h2 class="banner__title">${movie.title}</h2>
+        <p class="banner__info">Released on ${movie.release_date}</p>
+        <p class="banner__overview">${movie.overview.length > 200 ? movie.overview.slice(0,200).trim()+'...':movie.overview}</p>
+        <div class="action-button-cont">
+            <button class="action-button"><i class="fa-solid fa-play"></i> &nbsp Play</button>
+            <button class="action-button"><i class="fa-solid fa-circle-info"></i> &nbsp More Info</button>
+        </div>
+    `;
+    div.className="banner-content container";
+    bannerContainer.append(div);
+}
+function fetchAndBuildAllSections(){
+    fetch(apiPaths.fetchAllCategories)
     .then(res=>res.json())
-    .then(res=> {
-        // const languages = res.english_name;
-        // console.log(res)
-        createBrowseSection(res);
+    .then(res=>{
+        // console.log(res.genres);
+        const categories = res.genres;
+        // console.table(categories);
+        categories.forEach(category =>{
+            fetchAndBuildMovieSection(
+                apiPaths.fetchMoviesList(category.id),
+            category.name);
+        });
     })
     .catch(err=>console.log(err));
 }
 
-function createBrowseSection(languages){
-    const browseCont = document.getElementById('browse-cont');
-    const langListHTML = languages.map(item=>{
-        // console.log(item);
-        if(item.iso_639_1=="en"){
-            return ` 
-            <option class = "lang-item" value='${item.iso_639_1} ${item.english_name}' selected>${item.english_name}</option> 
-            `;      
-        }
-        return ` 
-        <option class = "lang-item" value='${item.iso_639_1} ${item.english_name}'>${item.english_name}</option> 
-        `;       
-    }).join('');
-
-    
-    const browseSectionHTML = `
-        <label for="lang">Browse by language:</label>
-        <select class="lang-select"  id="lang" name="Audio" onchange="handleSelection()" onselect="handleSelection()">
-            ${langListHTML}
-        </select>
-    `;
-    // console.log(browseSectionHTML);
-    const div = document.createElement('div');
-    div.className="browse-section";
-    div.id="browse-section";
-    div.innerHTML=browseSectionHTML
-
-    browseCont.append(div)
-}
-
-
-function fetchAndBuildAllSectionsMovies(language, type){
-    // console.log(apiPaths.fetchMoviesList(language));
-    const lang_codes = language.split(" ");
-    // console.log(lang_codes);
-
-    const langCode = lang_codes[0];
-    const langName = lang_codes[1];
-
-    url=""
-    if(type=="movie") url = apiPaths.fetchMoviesListByLang(langCode);
-    else url = apiPaths.fetchTvListByLang(langCode);
-
-    fetch(url)
+function fetchAndBuildMovieSection(fetchUrl, categoryName){
+    // console.table(fetchUrl,categoryName);
+    return fetch(fetchUrl)
     .then(res=>res.json())
     .then(res=>{
         // console.log(res);
         const movies = res.results;
-
         if(Array.isArray(movies) && movies.length){
-            buildMoviesSection(movies,langName,type);           
+            buildMoviesSection(movies,categoryName);
         }
-        // console.table(categories);
+        return movies;
     })
     .catch(err=>console.log(err));
 }
 
-
-function buildMoviesSection(list,lang,type){
-    
+function buildMoviesSection(list,categoryName){
     // console.log(list,categoryName);
     const moviesCont = document.getElementById('movies-cont');
-    // moviesCont.removeChild('div');
-
     const moviesListHTML = list.map(item=>{
         // fetch(`https://api.themoviedb.org/3/movie/${item.id}/images?api_key=${apiKey}`)
         // .then(res=>res.json())
         // .then(res=>console.log(res));
-
-        title = "";
-
-        if (type=="movie") title = item.title;
-        else title  = item.name;
-
         return ` 
-        <div class="movie-item"  onmouseover="searchMovieTrailer('${title}','yt${item.id}')">
-            <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${title}" >
+        <div class="movie-item" onmouseover="searchMovieTrailer('${item.title}','yt${item.id}')">
+            <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${item.title}" >
             <iframe width="245px" height="150px" src="" id="yt${item.id}"></iframe>
         </div> 
         `;       
     }).join('');
     // used join to remove ',' from between two img tags
 
-    topic_name = ""
-    if(type=="movie") topic_name = `${lang} Movies`;
-    else topic_name = `${lang} Tv Shows`;
-
     const moviesSectionHTML = `\
-            <h2 class="movies-section-heading">${topic_name}<span class="explore-nudge">Explore All</span> </h2>
+            <h2 class="movies-section-heading">${categoryName}<span class="explore-nudge">Explore All</span> </h2>
             <div class="movies-row">
                 ${moviesListHTML}
             </div>
@@ -140,23 +111,12 @@ function buildMoviesSection(list,lang,type){
 
     const div = document.createElement('div');
     div.className="movies-section";
-    div.id=lang;
     div.innerHTML=moviesSectionHTML
 
-    // console.log(moviesSectionHTML);
     // append HTML into container
 
-    const childs = moviesCont.children;
-
-    // Loop through the child elements
-    for (let i = 0; i < childs.length; i++) {
-        if(childs[i].id!=lang){
-            moviesCont.removeChild(childs[i]);
-        }
-    }
-    
     moviesCont.append(div);
-    
+
     // console.log(moviesSectionHTML)
     /* <div class="movies-section">
             <h2 class="movies-section-heading">Trending Now <span class="explore-nudge">Explore All</span> </h2>
@@ -184,16 +144,6 @@ function searchMovieTrailer(movieName, iframeId){
 
 }
 
-
-// All listeners
-
-function handleSelection(){
-    const selectedValue = document.getElementById('lang').value;
-    // console.log(selectedValue);
-    fetchAndBuildAllSectionsMovies(selectedValue,"movie");
-    fetchAndBuildAllSectionsMovies(selectedValue,"tv");
-}
-
 window.addEventListener('load',function(){
     init();
     window.addEventListener('scroll',function(){
@@ -202,3 +152,4 @@ window.addEventListener('load',function(){
         else header.classList.remove('bg_black');
     });
 });
+

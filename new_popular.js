@@ -5,29 +5,37 @@ const apiEndPoint = 'https://api.themoviedb.org/3'
 const imgPath = 'https://image.tmdb.org/t/p/original'
 const youtubeApiKey = 'AIzaSyACR7ch7qB2uH9ZIpxQNI285wFAVU7GsWY'
 const youtubeURL = 'https://www.youtube.com/watch?v='
-
-// https://api.themoviedb.org/3/tv/popular
-// only difference between index.html and tvshow.html is that we are using 'tv' api path here
 const apiPaths = {
+    fetchAllCategories: `${apiEndPoint}/genre/movie/list?api_key=${apiKey}`,
+    fetchMoviesList: (id) => `${apiEndPoint}/discover/movie?api_key=${apiKey}&with_genres=${id}`,
+    fetchTrending: `${apiEndPoint}/trending/movie/day?api_key=${apiKey}`,
+    searchOnYoutube: (query) => `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${youtubeApiKey}`,
+    fetchSearchedResults: (id) => `${apiEndPoint}/search/movie?api_key=${apiKey}&query=${id}`,
+    fetchAllCategoriesTv: `${apiEndPoint}/genre/tv/list?api_key=${apiKey}`,
+    fetchTvList: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_genres=${id}`,
+    fetchTrendingTv: `${apiEndPoint}/trending/tv/day?api_key=${apiKey}`,
     fetchMoviesNew: `${apiEndPoint}/movie/now_playing?api_key=${apiKey}`,
-    fetchMoviesPopular: `${apiEndPoint}/movie/popular?api_key=${apiKey}`,
+    fetchMoviesPopular: `${apiEndPoint}/movie/top_rated?api_key=${apiKey}`,
     fetchTvTopRated: `${apiEndPoint}/tv/top_rated?api_key=${apiKey}`,
     fetchTvPopular: `${apiEndPoint}/tv/popular?api_key=${apiKey}`,
-    searchOnYoutube: (query) => `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&key=${youtubeApiKey}`,
+    fetchAllLanguages: `https://api.themoviedb.org/3/configuration/languages?api_key=${apiKey}`,
+    fetchMoviesListByLang: (id) => `${apiEndPoint}/discover/movie?api_key=${apiKey}&with_original_language=${id}`,
+    fetchTvListByLang: (id) => `${apiEndPoint}/discover/tv?api_key=${apiKey}&with_original_language=${id}`,
 }
+
 
 //boots up the app
 function init(){
     // console.log(apiPaths.fetchTrending);
     fetchTrendingMovie();
     fetchAndBuildAllSections(apiPaths.fetchMoviesNew,'New Movies');
-    fetchAndBuildAllSections(apiPaths.fetchMoviesPopular,'Popular Movies');
+    fetchAndBuildAllSections(apiPaths.fetchMoviesPopular,'Top Rated Movies');
     fetchAndBuildAllSections(apiPaths.fetchTvPopular,'New Tv Shows');
     fetchAndBuildAllSections(apiPaths.fetchTvTopRated,'Top Rated Tv shows');
 }
 
-function fetchTrendingMovie(){
-    fetch(apiPaths.fetchMoviesPopular)
+async function fetchTrendingMovie(){
+    await fetch(apiPaths.fetchMoviesPopular)
     .then(res=>res.json())
     .then(res =>{
         // console.log(res);
@@ -56,11 +64,12 @@ function buildBannerSection(movie){
     bannerContainer.append(div);
 }
 
-function fetchAndBuildAllSections(url,categoryName){
-    fetch(url)
+async function fetchAndBuildAllSections(url,categoryName){
+    // console.log(url);
+    await fetch(url)
     .then(res=>res.json())
     .then(res=>{
-        console.log(res.results);
+        console.table(categoryName,res.results);
         buildMoviesSection(res.results,categoryName);
     })
     .catch(err=>console.log(err));
@@ -68,14 +77,24 @@ function fetchAndBuildAllSections(url,categoryName){
 
 function buildMoviesSection(list,categoryName){
     // console.log(list,categoryName);
+    
+
+    
+
     const moviesCont = document.getElementById('movies-cont');
     const moviesListHTML = list.map(item=>{
+        title = "";
+        if (categoryName.includes("Movies")) title = item.title;
+        else title  = item.name;
+        
+        // console.log(title);
+
         // fetch(`https://api.themoviedb.org/3/movie/${item.id}/images?api_key=${apiKey}`)
         // .then(res=>res.json())
         // .then(res=>console.log(res));
         return ` 
-        <div class="movie-item" onmouseover="searchMovieTrailer('${item.title}','yt${item.id}')">
-            <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${item.title}" >
+        <div class="movie-item" onmouseover="searchMovieTrailer('${title}','yt${item.id}')">
+            <img class="movie-item-img" src="${imgPath}${item.poster_path}" alt="${title}" >
             <iframe width="245px" height="150px" src="" id="yt${item.id}"></iframe>
         </div> 
         `;       
@@ -116,6 +135,7 @@ function searchMovieTrailer(movieName, iframeId){
     fetch(apiPaths.searchOnYoutube(movieName))
     .then(res=>res.json())
     .then(res=>{
+        console.log(res);
         const bestResult = res.items[0];
         // const ytUrl = `${youtubeURL}${bestResult.id.videoId}`;
         // console.log(ytUrl);
